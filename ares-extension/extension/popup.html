@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARES</title>
+    <style>
+      body { font-family: Arial, sans-serif; width: 320px; padding: 12px; }
+      .header { display:flex; align-items:center; justify-content:space-between; }
+      .title { font-weight: 700; font-size: 16px; }
+      .status { color:#444; margin: 6px 0 10px; }
+      .section-title { font-weight: 700; margin: 10px 0 6px; }
+      .row { display:flex; align-items:center; justify-content:space-between; padding: 6px 0; }
+      .left { display:flex; align-items:center; gap: 10px; }
+      .icon { width:24px; height:24px; border-radius:6px; background:#eee; display:flex; align-items:center; justify-content:center; font-weight:700; }
+      .domainRow { display:flex; gap: 8px; margin-top: 8px; }
+      input { flex:1; padding: 6px; }
+      button { padding: 6px 10px; }
+      .tip { color:#666; font-size: 12px; margin-top:6px; }
+      .footer { color:#666; font-size: 12px; text-align:right; margin-top: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="title">ARES</div>
+<label>
+  <input id="masterToggle" type="checkbox" />
+  <span>Enabled</span>
+</label>
+    </div>
+
+    <div id="status" class="status">Blocking enabled</div>
+
+    <div class="section-title">Block sites</div>
+    <div id="presetList"></div>
+
+    <div id="customList"></div>
+
+    <div class="domainRow">
+      <input id="customDomainInput" placeholder="Add a domain (e.g. reddit.com)" />
+      <button id="addBtn">Add</button>
+    </div>
+    <div class="tip">Tip: enter a domain only, no https://</div>
+
+    <div class="section-title">Disable ads</div>
+
+<div class="row">
+  <div class="left">
+    <div class="icon">Ad</div>
+    <div>YouTube ads </div>
+  </div>
+  <input id="ytAdsToggle" type="checkbox" />
+</div>
+
+<div class="row">
+  <div class="left">
+    <div class="icon">#</div>
+    <div id="ytAdsStats">YouTube ad requests blocked: 0</div>
+  </div>
+  <button id="resetYtAdsStatsBtn">Reset</button>
+</div>
+
+
+<div class="tip">Blocks some ad-related requests on YouTube. May not remove all ads.</div>
+
+
+    <div class="footer">by Stefano Paolucci</div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "ARES AdBlocker (MVP)",
+  "version": "0.0.2",
+  "action": {
+    "default_title": "ARES",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+  "declarativeNetRequest",
+  "declarativeNetRequestWithHostAccess",
+  "declarativeNetRequestFeedback",
+  "storage"
+],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  }
+}
