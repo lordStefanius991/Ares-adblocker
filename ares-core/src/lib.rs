@@ -11,3 +11,5 @@ pub mod simulator;
 pub use simulator::*;
 pub mod log;
 pub use log::*;
+pub mod api;
+pub use api::*;

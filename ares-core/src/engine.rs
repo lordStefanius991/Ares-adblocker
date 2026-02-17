@@ -1,6 +1,7 @@
 use crate::{Action, ExplainTrace, Profile, Request};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Decision {
     pub action: Action,
     pub trace: ExplainTrace,

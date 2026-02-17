@@ -1,6 +1,7 @@
 use crate::{evaluate, Decision, Profile, Request};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SimulationReport {
     pub total: usize,
     pub decisions: Vec<Decision>,

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ARES AdBlocker (MVP)",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "action": {
     "default_title": "ARES",
     "default_popup": "popup.html"
@@ -16,7 +16,9 @@
   "declarativeNetRequest",
   "declarativeNetRequestWithHostAccess",
   "declarativeNetRequestFeedback",
-  "storage"
+  "storage",
+  "activeTab",
+  "sidePanel"
 ],
   "host_permissions": [
     "<all_urls>"
@@ -25,4 +27,6 @@
     "service_worker": "service_worker.js",
     "type": "module"
   }
+
+  
 }

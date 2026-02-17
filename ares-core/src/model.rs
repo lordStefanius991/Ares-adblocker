@@ -1,4 +1,7 @@
-#[derive(Debug, Clone, PartialEq, Eq)]
+use serde::{Deserialize, Serialize};
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Action {
     Block,
     Allow,
@@ -18,7 +21,7 @@ pub enum ResourceType {
 
 
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Request {
     pub url: String,
     pub initiator: Option<String>,
@@ -26,7 +29,7 @@ pub struct Request {
 }
 
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Rule {
     pub id: String,
     pub description: String,
@@ -35,7 +38,7 @@ pub struct Rule {
     pub priority: u32,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Profile {
     pub id: String,
     pub name: String,
@@ -43,7 +46,7 @@ pub struct Profile {
     pub rules: Vec<Rule>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CompiledRule {
     pub id: String,
     pub action: Action,

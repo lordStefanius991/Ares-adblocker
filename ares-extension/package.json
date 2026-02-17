@@ -1,65 +1,20 @@
-[
-  {
-    "id": 1,
-    "priority": 1,
-    "action": { "type": "block" },
-    "condition": {
-      "urlFilter": "doubleclick.net",
-      "resourceTypes": [
-        "script",
-        "xmlhttprequest",
-        "sub_frame",
-        "image",
-        "stylesheet",
-        "font",
-        "ping",
-        "csp_report",
-        "media",
-        "websocket",
-        "other"
-      ]
-    }
+{
+  "name": "ares-extension",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && npm run build:sw && npm run build:ext && vite build",
+    "preview": "vite preview",
+    "build:sw": "esbuild extension/service_worker.ts --bundle --format=esm --outfile=extension/service_worker.js",
+"build:ext": "esbuild extension/popup.ts extension/sidepanel.ts extension/yt_ui_cleanup.ts extension/youtube_ad_skipper.ts --bundle --format=esm --outdir=extension --entry-names=[name]"
+
   },
-  {
-    "id": 2,
-    "priority": 1,
-    "action": { "type": "block" },
-    "condition": {
-      "urlFilter": "googlesyndication.com",
-      "resourceTypes": [
-        "script",
-        "xmlhttprequest",
-        "sub_frame",
-        "image",
-        "stylesheet",
-        "font",
-        "ping",
-        "csp_report",
-        "media",
-        "websocket",
-        "other"
-      ]
-    }
-  },
-  {
-    "id": 3,
-    "priority": 1,
-    "action": { "type": "block" },
-    "condition": {
-      "urlFilter": "googleads.g.doubleclick.net",
-      "resourceTypes": [
-        "script",
-        "xmlhttprequest",
-        "sub_frame",
-        "image",
-        "stylesheet",
-        "font",
-        "ping",
-        "csp_report",
-        "media",
-        "websocket",
-        "other"
-      ]
-    }
+  "devDependencies": {
+    "@types/chrome": "^0.1.36",
+    "esbuild": "^0.27.3",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4"
   }
-]
+}

@@ -1,8 +1,8 @@
-export {};
-
 const KEY_ENABLED = "ares_enabled";
 const KEY_CUSTOM = "ares_custom_domains";
 const KEY_YT_ADS = "ares_yt_ads";
+export {};
+
 
 const devStatusLine = document.getElementById("devStatusLine") as HTMLDivElement;
 
@@ -11,16 +11,11 @@ const devRefreshBtn = document.getElementById("devRefreshBtn") as HTMLButtonElem
 const devCopyBtn = document.getElementById("devCopyBtn") as HTMLButtonElement;
 const devClearBtn = document.getElementById("devClearBtn") as HTMLButtonElement;
 const devOut = document.getElementById("devOut") as HTMLTextAreaElement;
-const footer = document.querySelector(".footer") as HTMLDivElement | null;
-const ruleInspectorOut = document.getElementById("ruleInspectorOut") as HTMLDivElement;
-
 const devMetrics = document.getElementById("devMetrics") as HTMLPreElement;
 
 const devSessionStartBtn = document.getElementById("devSessionStartBtn") as HTMLButtonElement;
 const devSessionStopBtn = document.getElementById("devSessionStopBtn") as HTMLButtonElement;
 const devSessionStopAllBtn = document.getElementById("devSessionStopAllBtn") as HTMLButtonElement;
-
-const KEY_DEV = "ares_dev_mode";
 
 const ytAdsStats = document.getElementById("ytAdsStats") as HTMLDivElement;
 const resetYtAdsStatsBtn = document.getElementById("resetYtAdsStatsBtn") as HTMLButtonElement;
@@ -38,35 +33,9 @@ const customList = document.getElementById("customList") as HTMLDivElement;
 const customDomainInput = document.getElementById("customDomainInput") as HTMLInputElement;
 const addBtn = document.getElementById("addBtn") as HTMLButtonElement;
 const ytAdsToggle = document.getElementById("ytAdsToggle") as HTMLInputElement;
-const openPanelTopBtn = document.getElementById("openPanelTopBtn") as HTMLButtonElement;
-
-
-async function openSidePanelForActiveTab() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  const tabId = tab?.id;
-  if (typeof tabId !== "number") return;
-
-  // forza path/enable per quel tab (più robusto)
-  await chrome.sidePanel.setOptions({ tabId, path: "sidepanel.html", enabled: true });
-  await chrome.sidePanel.open({ tabId });
-}
-
-openPanelTopBtn.addEventListener("click", openSidePanelForActiveTab);
-
-
 
 function setStatus(enabled: boolean) {
   statusEl.textContent = enabled ? "ARES enabled" : "ARES disabled (rules paused)";
-}
-
-async function isDevMode(): Promise<boolean> {
-  const d = await chrome.storage.local.get(KEY_DEV);
-  return d[KEY_DEV] === true;
-}
-
-async function setDevMode(on: boolean) {
-  await chrome.storage.local.set({ [KEY_DEV]: on });
-  devPanel.style.display = on ? "block" : "none";
 }
 
 function normalizeDomain(input: string): string | null {
@@ -121,7 +90,6 @@ async function refreshDevLog() {
     }
   }
 
-  // ✅ textarea: 800 (non 200)
   const logResp = await send({
     type: "ARES_EXPORT_LOG_RANGE",
     limit: 800,
@@ -134,6 +102,7 @@ async function refreshDevLog() {
   const m = await send({ type: "ARES_GET_METRICS", limit: 500, tabId, fromTs, toTs });
 
   if (m?.ok) {
+
       // --- STATUS BADGE ---
   const modeLabel = fmtWindow(state, fromTs, toTs);
 
@@ -147,7 +116,7 @@ async function refreshDevLog() {
   `;
 
 
-  
+
     const lines: string[] = [
       `Context: ${host}`,
       `TabId: ${tabId ?? "?"}`,
@@ -171,7 +140,7 @@ async function refreshDevLog() {
             ``,
           ]
         : []),
-              ...(m.trend
+      ...(m.trend
         ? [
             `Trend (last ${m.trend.windowSeconds}s): ${m.trend.dir} (now=${m.trend.now}, prev=${m.trend.prev})`,
             ``,
@@ -232,78 +201,6 @@ async function loadState() {
   renderPresets(data, enabled);
   renderCustomDomains(Array.isArray(data[KEY_CUSTOM]) ? data[KEY_CUSTOM] : [], enabled);
 }
-
-if (footer) {
-  let footerClicks = 0;
-  let footerTimer: number | null = null;
-
-  footer.addEventListener("click", async () => {
-    footerClicks++;
-    if (footerTimer != null) clearTimeout(footerTimer);
-    footerTimer = window.setTimeout(() => (footerClicks = 0), 900);
-
-    if (footerClicks >= 5) {
-      footerClicks = 0;
-      const on = !(await isDevMode());
-      await setDevMode(on);
-      if (on) await refreshDevLog();
-    }
-  });
-}
-
-devRefreshBtn.addEventListener("click", refreshDevLog);
-
-
-
-
-devCopyBtn.addEventListener("click", async () => {
-  const { tabId } = await getActiveTabInfo();
-
-  let fromTs: number | undefined;
-  let toTs: number | undefined;
-
-  if (typeof tabId === "number") {
-    const w = await send({ type: "ARES_SESSION_TAB_WINDOW", tabId });
-    if (w?.ok && w.window) {
-      fromTs = typeof w.window.fromTs === "number" ? w.window.fromTs : undefined;
-      toTs = typeof w.window.toTs === "number" ? w.window.toTs : undefined;
-    }
-  }
-
-  const r = await send({ type: "ARES_EXPORT_METRICS", limit: 500, tabId, fromTs, toTs });
-  const json = r?.ok ? (r.json ?? "") : JSON.stringify(r);
-  await navigator.clipboard.writeText(json);
-});
-
-// ✅ Clear => Reset tab (LIVE)
-devClearBtn.addEventListener("click", async () => {
-  const { tabId } = await getActiveTabInfo();
-  if (typeof tabId !== "number") return;
-  await send({ type: "ARES_SESSION_RESET_TAB", tabId });
-  await refreshDevLog();
-});
-
-// session buttons
-devSessionStartBtn.addEventListener("click", async () => {
-  const { tabId } = await getActiveTabInfo();
-  if (typeof tabId !== "number") return;
-  await send({ type: "ARES_SESSION_START", tabId });
-  await refreshDevLog();
-});
-
-devSessionStopBtn.addEventListener("click", async () => {
-  const { tabId } = await getActiveTabInfo();
-  if (typeof tabId !== "number") return;
-  await send({ type: "ARES_SESSION_STOP", tabId });
-  await refreshDevLog();
-});
-
-devSessionStopAllBtn.addEventListener("click", async () => {
-  await send({ type: "ARES_SESSION_STOP_ALL" });
-  await refreshDevLog();
-});
-
-isDevMode().then((on) => setDevMode(on));
 
 function renderPresets(data: any, enabled: boolean) {
   presetList.innerHTML = "";
@@ -393,6 +290,55 @@ function renderCustomDomains(domains: any[], enabled: boolean) {
   }
 }
 
+// --- UI handlers ---
+devRefreshBtn.addEventListener("click", refreshDevLog);
+
+devCopyBtn.addEventListener("click", async () => {
+  const { tabId } = await getActiveTabInfo();
+
+  let fromTs: number | undefined;
+  let toTs: number | undefined;
+
+  if (typeof tabId === "number") {
+    const w = await send({ type: "ARES_SESSION_TAB_WINDOW", tabId });
+    if (w?.ok && w.window) {
+      fromTs = typeof w.window.fromTs === "number" ? w.window.fromTs : undefined;
+      toTs = typeof w.window.toTs === "number" ? w.window.toTs : undefined;
+    }
+  }
+
+  const r = await send({ type: "ARES_EXPORT_METRICS", limit: 500, tabId, fromTs, toTs });
+  const json = r?.ok ? (r.json ?? "") : JSON.stringify(r);
+  await navigator.clipboard.writeText(json);
+});
+
+// Reset tab -> LIVE
+devClearBtn.addEventListener("click", async () => {
+  const { tabId } = await getActiveTabInfo();
+  if (typeof tabId !== "number") return;
+  await send({ type: "ARES_SESSION_RESET_TAB", tabId });
+  await refreshDevLog();
+});
+
+devSessionStartBtn.addEventListener("click", async () => {
+  const { tabId } = await getActiveTabInfo();
+  if (typeof tabId !== "number") return;
+  await send({ type: "ARES_SESSION_START", tabId });
+  await refreshDevLog();
+});
+
+devSessionStopBtn.addEventListener("click", async () => {
+  const { tabId } = await getActiveTabInfo();
+  if (typeof tabId !== "number") return;
+  await send({ type: "ARES_SESSION_STOP", tabId });
+  await refreshDevLog();
+});
+
+devSessionStopAllBtn.addEventListener("click", async () => {
+  await send({ type: "ARES_SESSION_STOP_ALL" });
+  await refreshDevLog();
+});
+
 masterToggle.addEventListener("change", async () => {
   await send({ type: "ARES_SET_ENABLED", enabled: masterToggle.checked });
   await loadState();
@@ -416,4 +362,8 @@ addBtn.addEventListener("click", async () => {
   await loadState();
 });
 
+// side panel always shows dev panel
+devPanel.style.display = "block";
+
 loadState();
+refreshDevLog();
